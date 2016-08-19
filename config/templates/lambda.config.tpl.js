@@ -5,5 +5,5 @@ module.exports = {
     functionName: process.env.APP,
     timeout: 60,
     memorySize: 128,
-    runtime: 'nodejs'
+    runtime: 'nodejs4.3'
 }
