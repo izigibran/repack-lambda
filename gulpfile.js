@@ -1,33 +1,31 @@
 var gulp = require('gulp'),
     zip = require('gulp-zip'),
     del = require('del'),
-    install = require('gulp-install'),
     runSequence = require('run-sequence'),
-    lambda = require("node-aws-lambda"),
+    lambda = require('node-aws-lambda'),
     rimraf = require('rimraf');
+
+const zipped = `./tmp/${process.env.APP}.zip`;
 
 //load release-it tasks
 require('gulp-release-it')(gulp);
 
-gulp.task('modules', function() {
-    return gulp.src('./package.json')
-        .pipe(gulp.dest('dist/'))
-        .pipe(install({production: true}));
+gulp.task('zip', () => {
+    return gulp.src(`./dest/lambdas/${process.env.APP}/**/*`)
+        .pipe(zip(`${process.env.APP}.zip`))
+        .pipe(gulp.dest('./tmp'));
 });
 
-gulp.task('zip', function() {
-    return gulp.src(['dist/**/*', '!dist/package.json'])
-        .pipe(zip('./tmp/dist.zip'))
-        .pipe(gulp.dest('./'));
+gulp.task('upload', (callback) => {
+    lambda.deploy(
+      zipped,
+      require(`./config/${process.env.APP}.config.js`),
+      callback
+    );
 });
 
-gulp.task('upload', function(callback) {
-    lambda.deploy('./tmp/dist.zip', require('./config/'+process.env.APP+'.config.js'), callback);
-});
-
-gulp.task('deploy', function(callback) {
+gulp.task('deploy', (callback) => {
     return runSequence(
-        ['modules'],
         ['zip'],
         ['upload'],
         callback
