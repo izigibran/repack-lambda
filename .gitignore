@@ -23,6 +23,6 @@ selenium
 .babelcache.json
 *.swp
 *.swo
-dest
+dist
 tmp
 build
