@@ -1,4 +1,4 @@
-export function handler(event, context) {
+export function handler(event, context, callback) {
     console.log(event);
-    context.success('done!');
+    callback(null, 'done!');
 }
